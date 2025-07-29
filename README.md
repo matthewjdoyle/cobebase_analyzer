@@ -1,61 +1,19 @@
-# Codebase Analyzer v2.0
+# Codebase Analyzer
 
-A comprehensive, modular command-line tool for analyzing codebases with detailed metrics, insights, and visualizations.
+A comprehensive command-line tool for analyzing codebases with detailed metrics and insights.
 
-## 🚀 New in v2.0
+## Features
 
-- **Modular Architecture**: Completely refactored with separate modules for core analysis, reporting, exporting, and CLI
-- **Extensible Design**: Plugin system for custom reporters and exporters
-- **Type Safety**: Full type hints and Pydantic models for data validation
-- **Enhanced Configuration**: Comprehensive configuration management with validation
-- **Better Error Handling**: Robust error handling and logging throughout
-- **Performance Improvements**: Optimized analysis algorithms and progress tracking
-- **Multiple Export Formats**: JSON, CSV, and text export options
-- **Rich Terminal Output**: Beautiful, interactive terminal interface
-
-## ✨ Features
-
-- **Project Structure Analysis**: Visualize folder hierarchy with per-file statistics
-- **File Metrics**: Count files, lines of code, and file sizes with detailed breakdowns
-- **Language Detection**: Identify programming languages and file types automatically
+- **Project Structure Analysis**: Visualize folder hierarchy and organization with per-file statistics
+- **File Metrics**: Count files, lines of code, and file sizes
+- **Language Detection**: Identify programming languages and file types
 - **Code Statistics**: Lines of code, comments, blank lines per file type
-- **Size Analysis**: File and directory size breakdowns with human-readable formatting
-- **Complexity Metrics**: Basic complexity analysis with configurable thresholds
-- **Export Options**: Generate reports in JSON, CSV, and text formats
-- **Interactive Mode**: Explore codebase interactively with real-time commands
-- **Configuration Management**: Flexible configuration system with validation
-- **Progress Tracking**: Real-time progress indicators for large analyses
-- **Plugin System**: Extensible architecture for custom reporters and exporters
+- **Size Analysis**: File and directory size breakdowns
+- **Complexity Metrics**: Basic complexity analysis
+- **Export Options**: Generate reports in various formats
+- **Interactive Mode**: Explore codebase interactively
 
-## 🏗️ Architecture
-
-The project is organized into modular components:
-
-```
-src/cobebase_analyzer/
-├── core/           # Core analysis functionality
-│   ├── analyzer.py # Main analyzer class
-│   ├── config.py   # Configuration management
-│   └── models.py   # Data models and types
-├── reporters/      # Report generation
-│   ├── base.py     # Base reporter interface
-│   ├── rich_reporter.py    # Rich terminal output
-│   └── text_reporter.py    # Plain text output
-├── exporters/      # Data export functionality
-│   ├── base.py     # Base exporter interface
-│   ├── json_exporter.py    # JSON export
-│   ├── csv_exporter.py     # CSV export
-│   └── txt_exporter.py     # Text export
-├── cli/            # Command-line interface
-│   └── main.py     # Click-based CLI
-├── utils/          # Utility functions
-│   └── logger.py   # Logging utilities
-└── plugins/        # Plugin system (future)
-```
-
-## 📦 Installation
-
-### From Source
+## Installation
 
 1. Clone this repository:
 ```bash
@@ -68,124 +26,62 @@ cd cobebase_analyzer
 pip install -r requirements.txt
 ```
 
-3. Install in development mode:
+3. Make the tool executable:
 ```bash
-pip install -e .
+python -m pip install -e .
 ```
 
-### Development Installation
+## Usage
 
-For development with all tools:
+### Basic Analysis (Default)
 ```bash
-pip install -e ".[dev]"
+python analyzer.py analyze /path/to/your/codebase
 ```
 
-## 🎯 Usage
+The default output includes:
+- 📊 **Summary Statistics**: Total files, directories, lines of code, and size
+- 📁 **File Types Breakdown**: Count, lines, and size by file type
+- 🌳 **Project Structure**: Tree view with per-file statistics (type, size, lines)
 
-### Basic Analysis
-
+### Detailed Analysis with Additional Metrics
 ```bash
-# Analyze current directory
-cobebase-analyzer analyze .
+python analyzer.py analyze /path/to/your/codebase --detailed
+```
 
-# Analyze specific directory
-cobebase-analyzer analyze /path/to/your/project
+The detailed output adds:
+- 📏 **Largest Files**: Top 10 largest files by size
+- 🔍 **Detailed Metrics**: Code/comment/blank line breakdowns with ratios
 
+### Other Commands
+```bash
 # Quick statistics overview
-cobebase-analyzer stats /path/to/your/project
-```
+python analyzer.py stats /path/to/your/codebase
 
-### Detailed Analysis
-
-```bash
-# Full analysis with detailed metrics
-cobebase-analyzer analyze /path/to/your/project --detailed
-
-# Export results to JSON
-cobebase-analyzer analyze /path/to/your/project --detailed --export json
-
-# Export results to CSV
-cobebase-analyzer analyze /path/to/your/project --export csv
-```
-
-### Project Structure Visualization
-
-```bash
 # Show project structure as tree
-cobebase-analyzer structure /path/to/your/project
+python analyzer.py structure /path/to/your/codebase
 
-# Show deeper structure (up to 5 levels)
-cobebase-analyzer structure /path/to/your/project --max-depth 5
+# Interactive exploration mode
+python analyzer.py interactive /path/to/your/codebase
 ```
 
-### Interactive Mode
+### Available Commands
 
-```bash
-# Start interactive exploration
-cobebase-analyzer interactive /path/to/your/project
-```
+- `analyze`: Perform comprehensive codebase analysis (default: summary + tree)
+- `interactive`: Start interactive exploration mode
+- `stats`: Quick statistics overview
+- `structure`: Show project structure tree
 
-### Configuration Management
+### Options
 
-```bash
-# Create default configuration
-cobebase-analyzer config
+- `--detailed`: Include additional detailed metrics (largest files, code/comment ratios)
+- `--export FORMAT`: Export results (json, csv, txt)
+- `--ignore PATTERN`: Ignore files/directories matching pattern
+- `--max-depth N`: Maximum directory depth to analyze
+- `--sort-by FIELD`: Sort results by field (size, lines, name)
 
-# Create configuration in specific location
-cobebase-analyzer config --config-file ./my_config.json
-```
+## Output Examples
 
-### Export Results
-
-```bash
-# Export to JSON
-cobebase-analyzer export /path/to/project --format json
-
-# Export to CSV with custom output path
-cobebase-analyzer export /path/to/project --format csv --output ./results.csv
-```
-
-## 🔧 Configuration
-
-The tool uses a comprehensive configuration system with Pydantic validation:
-
-```json
-{
-  "max_file_size_mb": 100,
-  "max_depth": null,
-  "follow_symlinks": false,
-  "include_hidden": false,
-  "show_progress": true,
-  "color_output": true,
-  "detailed_by_default": false,
-  "text_file_extensions": [".py", ".js", ".java", ...],
-  "binary_extensions": [".exe", ".dll", ".so", ...],
-  "comment_patterns": {
-    "Python": {"single": "#", "multi_start": "\"\"\"", "multi_end": "\"\"\""},
-    "JavaScript": {"single": "//", "multi_start": "/*", "multi_end": "*/"}
-  },
-  "complexity_metrics": {
-    "enabled": true,
-    "max_function_length": 50,
-    "max_class_length": 500
-  },
-  "export_settings": {
-    "formats": ["json", "csv", "txt"],
-    "directory": "reports",
-    "include_timestamp": true
-  },
-  "performance": {
-    "parallel_processing": false,
-    "max_workers": 4,
-    "chunk_size": 1000
-  }
-}
-```
-
-## 📊 Output Examples
-
-### Rich Terminal Output
-
+### Default Analysis Output
 ```
 📊 Codebase Analysis Summary
 ╭─────────────────────┬─────────╮
@@ -195,129 +91,39 @@ The tool uses a comprehensive configuration system with Pydantic validation:
 │ Total Directories   │ 1       │
 │ Total Lines of Code │ 1,857   │
 │ Total Size          │ 0.06 MB │
-│ Unique File Types   │ 3       │
-│ Average File Size   │ 4.2 KB  │
-│ Average Lines/File  │ 123.8   │
 ╰─────────────────────┴─────────╯
 
 📁 File Types Breakdown
-╭───────────┬───────┬───────┬───────────┬────────────╮
-│ File Type │ Count │ Lines │ Size (MB) │ Percentage │
-├───────────┼───────┼───────┼───────────┼────────────┤
-│ Python    │ 5     │ 1,420 │ 0.05      │ 33.3%      │
-│ Markdown  │ 2     │ 268   │ 0.01      │ 13.3%      │
-│ Text      │ 6     │ 22    │ 0.00      │ 40.0%      │
-╰───────────┴───────┴───────┴───────────┴────────────╯
+╭───────────┬───────┬───────┬───────────╮
+│ File Type │ Count │ Lines │ Size (MB) │
+├───────────┼───────┼───────┼───────────┤
+│ Python    │ 5     │ 1,420 │ 0.05      │
+│ Markdown  │ 2     │ 268   │ 0.01      │
+│ Text      │ 6     │ 22    │ 0.00      │
+╰───────────┴───────┴───────┴───────────╯
+
+🌳 Project Structure with File Statistics
+📁 project-name
+├── 📄 analyzer.py (Python) - 28.2KB, 662 lines
+├── 📄 config.py (Python) - 8.1KB, 201 lines
+├── 📄 README.md (Markdown) - 2.2KB, 85 lines
+└── 📄 requirements.txt (Text) - 0.1KB, 5 lines
 ```
 
-## 🔌 Extending the Tool
+## Output
 
-### Creating Custom Reporters
+The tool provides:
+- Rich terminal output with colors and formatting
+- Detailed metrics for each file type
+- Project structure visualization with per-file statistics
+- Summary statistics
+- Exportable reports
 
-```python
-from cobebase_analyzer.reporters.base import BaseReporter
-from cobebase_analyzer.core.models import AnalysisResult
+## Supported File Types
 
-class CustomReporter(BaseReporter):
-    def generate_report(self, result: AnalysisResult, detailed: bool = False) -> str:
-        # Your custom report generation logic
-        return "Custom report content"
-    
-    def display_report(self, result: AnalysisResult, detailed: bool = False) -> None:
-        # Your custom display logic
-        print(self.generate_report(result, detailed))
-
-# Register your reporter
-from cobebase_analyzer.reporters.base import reporter_registry
-reporter_registry.register('custom', CustomReporter)
-```
-
-### Creating Custom Exporters
-
-```python
-from cobebase_analyzer.exporters.base import BaseExporter
-from cobebase_analyzer.core.models import AnalysisResult
-
-class CustomExporter(BaseExporter):
-    def export(self, result: AnalysisResult, output_path: str) -> None:
-        # Your custom export logic
-        pass
-    
-    def get_supported_formats(self) -> list:
-        return ['custom']
-
-# Register your exporter
-from cobebase_analyzer.exporters.base import exporter_registry
-exporter_registry.register('custom', CustomExporter)
-```
-
-## 🧪 Testing
-
-Run the test suite:
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=cobebase_analyzer
-
-# Run specific test file
-pytest tests/test_analyzer.py
-```
-
-## 📝 Development
-
-### Code Quality
-
-```bash
-# Format code
-black src/
-
-# Lint code
-flake8 src/
-
-# Type checking
-mypy src/
-```
-
-### Building
-
-```bash
-# Build package
-python setup.py sdist bdist_wheel
-
-# Install in development mode
-pip install -e .
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-- **Documentation**: [README.md](README.md)
-- **Issues**: [GitHub Issues](https://github.com/matthewjdoyle/codebase_analyzer/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/matthewjdoyle/codebase_analyzer/discussions)
-
-## 🔄 Migration from v1.0
-
-The v2.0 release includes breaking changes for better modularity:
-
-- **New Package Structure**: The tool is now organized in `src/cobebase_analyzer/`
-- **Updated CLI**: New command structure with better organization
-- **Configuration Changes**: New configuration format with validation
-- **API Changes**: Updated import paths and class interfaces
-
-For migration help, see the [Migration Guide](MIGRATION.md).
+- Programming languages: Python, JavaScript, TypeScript, Java, C++, C#, Go, Rust, PHP, Ruby, Swift, Kotlin
+- Web technologies: HTML, CSS, SCSS, SASS, JSX, TSX
+- Configuration files: JSON, YAML, TOML, XML, INI
+- Documentation: Markdown, RST, TXT
+- And many more...
 
