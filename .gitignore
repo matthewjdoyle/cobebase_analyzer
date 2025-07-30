@@ -135,6 +135,10 @@ dmypy.json
 reports/
 test_analysis.*
 
+# Visualization outputs (examples should not be committed)
+visualizations/
+*.png
+
 # IDE files
 .vscode/
 .idea/

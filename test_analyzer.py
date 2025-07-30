@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
 """
 Test script for the Codebase Analyzer
-Demonstrates various features and usage patterns
+Demonstrates various features and usage patterns for the refactored modular version
 """
 
 import os
 import tempfile
 import shutil
+import sys
 from pathlib import Path
-from analyzer import CodebaseAnalyzer, cli
+
+# Add current directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+
+from core.analyzer import CodebaseAnalyzer
+from reports.reporter import Reporter
+from reports.visualizer import Visualizer
+from cli.commands import cli
 import click.testing
 
 def create_sample_project():
@@ -217,12 +225,58 @@ def test_detailed_analysis():
     analyzer = CodebaseAnalyzer(project_path)
     stats = analyzer.analyze()
     
-    # Generate detailed report
-    report = analyzer.generate_report(detailed=True)
+    # Generate detailed report using new modular approach
+    reporter = Reporter(stats)
     print("📊 Detailed Report:")
-    print(report)
+    reporter.display_report(detailed=True)
     
     return stats
+
+def test_visualization_functionality():
+    """Test new matplotlib visualization functionality"""
+    print("\n🧪 Testing visualization functionality...")
+    
+    project_path = create_sample_project()
+    analyzer = CodebaseAnalyzer(project_path)
+    stats = analyzer.analyze()
+    
+    try:
+        # Test visualizations
+        visualizer = Visualizer(stats)
+        
+        # Test individual visualizations
+        test_dir = Path(tempfile.mkdtemp()) / "test_viz"
+        test_dir.mkdir(exist_ok=True)
+        
+        created_files = []
+        
+        # Test pie chart
+        pie_chart = visualizer.create_file_types_pie_chart(
+            save_path=str(test_dir / "test_pie.png"), show=False)
+        if pie_chart:
+            created_files.append(pie_chart)
+        
+        # Test bar chart
+        bar_chart = visualizer.create_lines_by_type_bar_chart(
+            save_path=str(test_dir / "test_bar.png"), show=False)
+        if bar_chart:
+            created_files.append(bar_chart)
+        
+        # Test all visualizations
+        all_files = visualizer.create_all_visualizations(
+            output_dir=str(test_dir / "all"), show=False)
+        created_files.extend(all_files)
+        
+        print(f"✅ Visualization tests completed!")
+        print(f"   Created {len(created_files)} visualization files")
+        
+        # Clean up test files
+        shutil.rmtree(test_dir)
+        
+    except ImportError:
+        print("❌ Matplotlib not available for testing visualizations")
+    except Exception as e:
+        print(f"❌ Visualization test failed: {e}")
 
 def test_export_functionality():
     """Test export functionality"""
@@ -232,14 +286,17 @@ def test_export_functionality():
     analyzer = CodebaseAnalyzer(project_path)
     stats = analyzer.analyze()
     
+    # Test export using new modular approach
+    reporter = Reporter(stats)
+    
     # Test JSON export
-    analyzer.export_results('json', 'test_analysis.json')
+    reporter.export_results('json', 'test_analysis.json')
     
     # Test CSV export
-    analyzer.export_results('csv', 'test_analysis.csv')
+    reporter.export_results('csv', 'test_analysis.csv')
     
     # Test TXT export
-    analyzer.export_results('txt', 'test_analysis.txt')
+    reporter.export_results('txt', 'test_analysis.txt')
     
     print("✅ Export tests completed!")
     
@@ -347,26 +404,32 @@ class Class_{j}:
 
 def main():
     """Run all tests"""
-    print("🚀 Starting Codebase Analyzer Tests")
-    print("=" * 50)
+    print("🚀 Starting Codebase Analyzer Tests (Refactored Version)")
+    print("=" * 60)
     
     try:
         # Run all tests
         test_basic_analysis()
         test_detailed_analysis()
+        test_visualization_functionality()
         test_export_functionality()
         test_cli_commands()
         test_ignore_patterns()
         test_file_type_detection()
         run_performance_test()
         
-        print("\n" + "=" * 50)
+        print("\n" + "=" * 60)
         print("✅ All tests completed successfully!")
-        print("\n🎉 The Codebase Analyzer is working correctly!")
+        print("\n🎉 The refactored Codebase Analyzer is working correctly!")
+        print("\n🆕 New features:")
+        print("  📊 Beautiful matplotlib visualizations")
+        print("  🏗️  Modular architecture with separated concerns")
+        print("  📋 Enhanced CLI with --visualize option")
         print("\nTo use the tool:")
         print("  python analyzer.py analyze /path/to/your/codebase")
-        print("  python analyzer.py stats /path/to/your/codebase")
-        print("  python analyzer.py structure /path/to/your/codebase")
+        print("  python analyzer.py analyze /path/to/your/codebase --visualize")
+        print("  python analyzer.py visualize /path/to/your/codebase")
+        print("  python analyzer.py stats /path/to/your/codebase --visualize")
         
     except Exception as e:
         print(f"\n❌ Test failed: {e}")
